@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\mariana\desktop\battleship_cplusplus_mari\battleship_cplusplus_mari\main.cpp(15): warning C4309: 'initializing': truncation of constant value
+  BattleShip_CPlusPlus_Mari.vcxproj -> C:\Users\Mariana\Desktop\BattleShip_CPlusPlus_Mari\Debug\BattleShip_CPlusPlus_Mari.exe
+  BattleShip_CPlusPlus_Mari.vcxproj -> C:\Users\Mariana\Desktop\BattleShip_CPlusPlus_Mari\Debug\BattleShip_CPlusPlus_Mari.pdb (Partial PDB)
