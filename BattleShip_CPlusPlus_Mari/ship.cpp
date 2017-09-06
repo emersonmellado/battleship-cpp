@@ -57,13 +57,7 @@ void Ship::Place(int BOARD_WIDTH, int BOARD_HEIGHT)
 	(10 marks) for the driver
 	*/
 
-	//PLACESHIPS UserInputShipPlacement()
-	//{
 	int d, x, y;
-	//hipLocation temp;
-	//Using this as a bad return
-	//this->point[0].X = -1;
-	//Get 3 integers from user
 	d = rand() % 2 + 1;
 	do {
 		x = rand() % BOARD_WIDTH;
@@ -73,12 +67,9 @@ void Ship::Place(int BOARD_WIDTH, int BOARD_HEIGHT)
 		y = rand() % BOARD_HEIGHT;
 	} while (y < 0 || y >= BOARD_HEIGHT);
 
-	//Good data
 	this->horizontalVertical = d;
 	this->point[0].X = x;
 	this->point[0].Y = y;
-	//return temp;
-	//}
 }
 
 void Ship::SaveInformationLog(string textToSave)

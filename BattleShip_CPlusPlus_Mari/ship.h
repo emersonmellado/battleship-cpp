@@ -31,7 +31,6 @@ public:
 	4.	A function called Place() that should place a ship randomly (correctly) on a grid. If a ship location is not available or the ship can’t be placed, the function should try again until it places the ship.
 	5.	A function called InformationLog() that appends to an information log( information log is a simple sequential file)
 	6.	A function called ErrorLog() that appends to an error log when a ship is not placed due to logical errors. (Example: you cannot place a 3 cell long ship vertically in row 16 col 1)
-
 	*/
 	void SetName(string);
 	string GetName();
