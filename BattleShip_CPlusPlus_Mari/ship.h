@@ -7,10 +7,9 @@ using std::string;
 #define SHIP_H
 
 struct Point {
-	//A location on the grid defined
-	//by X(horizontal) Y(vertical) coordinates
-	int X;
-	int Y;
+	int d;
+	int x;
+	int y;
 };
 
 class Ship {

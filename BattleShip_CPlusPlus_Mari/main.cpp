@@ -16,11 +16,12 @@ const char isHIT = 'H';
 const char isSHIP = 'S';
 const char isMISS = 'M';
 
-vector<Ship> ship(SHIP_TYPES);
+vector<Ship> userShips(SHIP_TYPES + 1);
+vector<Ship> enemyShips(SHIP_TYPES + 1);
 
 struct PLAYER {
 	char grid[BOARD_WIDTH][BOARD_HEIGHT];
-	Ship ship[BOARD_WIDTH][BOARD_HEIGHT];
+	//int shipId[BOARD_WIDTH][BOARD_HEIGHT];
 }player[3]; //Ignore player 0, just using player's 1 & 2
 
 enum Position { HORIZONTAL = 1, VERTICAL = 2 };
@@ -36,8 +37,6 @@ bool gameRunning = false;
 void LoadShips();
 void ResetBoard();
 void DrawBoard(int);
-ShipLocation UserInputShipPlacement();
-bool UserInputAttack(int&, int&, int);
 bool GameOverCheck(int);
 
 int random(int, int);
@@ -56,37 +55,48 @@ int main()
 	for (int aplyr = 1; aplyr < 3; ++aplyr)
 	{
 		//Loop through each ship type to place
-		for (int thisShip = 0; thisShip < SHIP_TYPES; ++thisShip)
+		for (int thisShip = 0; thisShip <= SHIP_TYPES; ++thisShip)
 		{
 			system("cls");
 			DrawBoard(aplyr);
-			ShipLocation aShip;
-			aShip.ship.Place(BOARD_WIDTH, BOARD_HEIGHT);
 
-			//Combine user data with "this ship" data
-			aShip.ship.SetSize(ship[thisShip].GetSize());
-			aShip.ship.SetName(ship[thisShip].GetName());
+			Ship currentShip;
+			if (aplyr == 1) {
+				currentShip = userShips[thisShip];
+			}
+			else {
+				currentShip = enemyShips[thisShip];
+			}
+
+			currentShip.Place(BOARD_WIDTH, BOARD_HEIGHT);
 
 			//Add the FIRST grid point to the current player's game board
-			player[aplyr].grid[aShip.ship.point[0].X][aShip.ship.point[0].Y] = isSHIP;
-			player[aplyr].ship[aShip.ship.point[0].X][aShip.ship.point[0].Y] = ship[thisShip];
+			player[aplyr].grid[currentShip.point[0].x][currentShip.point[0].y] = isSHIP;
+			//player[aplyr].shipId[currentShip.point[0].x][currentShip.point[0].y] = thisShip;
 
 			//Determine ALL grid points based on length and direction
-			for (int i = 1; i < aShip.ship.GetSize(); ++i)
+			for (int i = 1; i < currentShip.GetSize(); ++i)
 			{
 				//horizontalVertical
-				if (aShip.ship.GetPosition() == HORIZONTAL) {
-					aShip.ship.point[i].X = aShip.ship.point[i - 1].X + 1;
-					aShip.ship.point[i].Y = aShip.ship.point[i - 1].Y;
+				if (currentShip.GetPosition() == HORIZONTAL) {
+					currentShip.point[i].x = currentShip.point[i - 1].x + 1;
+					currentShip.point[i].y = currentShip.point[i - 1].y;
 				}
-				if (aShip.ship.GetPosition() == VERTICAL) {
-					aShip.ship.point[i].Y = aShip.ship.point[i - 1].Y + 1;
-					aShip.ship.point[i].X = aShip.ship.point[i - 1].X;
+				if (currentShip.GetPosition() == VERTICAL) {
+					currentShip.point[i].y = currentShip.point[i - 1].y + 1;
+					currentShip.point[i].x = currentShip.point[i - 1].x;
 				}
 
 				//Add the REMAINING grid points to our current players game board
-				player[aplyr].grid[aShip.ship.point[i].X][aShip.ship.point[i].Y] = isSHIP;
-				player[aplyr].ship[aShip.ship.point[i].X][aShip.ship.point[i].Y] = ship[thisShip];
+				player[aplyr].grid[currentShip.point[i].x][currentShip.point[i].y] = isSHIP;
+				//player[aplyr].shipId[currentShip.point[i].x][currentShip.point[i].y] = thisShip;
+			}
+
+			if (aplyr == 1) {
+				userShips[thisShip] = currentShip;
+			}
+			else {
+				enemyShips[thisShip] = currentShip;
 			}
 			//Loop back through each ship type
 		}
@@ -111,7 +121,7 @@ int main()
 		//Get attack coords from this player
 		bool goodInput = false;
 		int x, y;
-		//if (thisPlayer == 2) {
+		if (thisPlayer == 2) {
 			//If the player == 2 it means the computer
 			//So we are going to fake a random shot
 			srand(time(NULL));
@@ -121,16 +131,49 @@ int main()
 			} while (player[enemyPlayer].grid[x][y] == isMISS || player[enemyPlayer].grid[x][y] == isHIT);
 
 			goodInput = true;
-		//}
-		//while (goodInput == false) {
-		//	goodInput = UserInputAttack(x, y, thisPlayer);
-		//}
+		}
+		while (goodInput == false) {
+			goodInput = UserInputAttack(x, y, thisPlayer);
+		}
+
+		Ship shipHit;
+
+		for (int i = 0; i < SHIP_TYPES + 1; ++i)
+		{
+			for (int j = 0; j < SHIP_TYPES - 1; ++j)
+			{
+				if (enemyPlayer == 1) {
+					if (userShips[i].point[j].x == x && userShips[i].point[j].y == y) {
+						userShips[i].hitFlag[j] = true;
+						shipHit = userShips[i];
+						break;
+					}
+				}
+				else {
+					if (enemyShips[i].point[j].x == x && enemyShips[i].point[j].y == y) {
+						enemyShips[i].hitFlag[j] = true;
+						shipHit = enemyShips[i];
+						break;
+					}
+				}
+			}
+		}
+
+		int hitNumber = 0;
+		for (int i = 0; i < SHIP_TYPES - 1; ++i)
+		{
+			if (shipHit.hitFlag[i] == true) {
+				hitNumber++;
+			}
+		}
+
+		string currentPlayer = (thisPlayer == 1) ? "USER" : "COMPUTER";
 
 		//Check board; if a ship is there, set as HIT.. otherwise MISS
 		if (player[enemyPlayer].grid[x][y] == isSHIP) {
 			player[enemyPlayer].grid[x][y] = isHIT;
-			player[enemyPlayer].ship[x][y].SaveInformationLog(player[enemyPlayer].ship[x][y].GetName() + ", was HIT");
-			system("pause");
+
+			shipHit.SaveInformationLog(currentPlayer + ": " + shipHit.GetName() + ", was HIT " + to_string(hitNumber) + " times");
 		}
 
 		if (player[enemyPlayer].grid[x][y] == isWATER) {
@@ -180,7 +223,7 @@ bool GameOverCheck(int enemyPLAYER)
 bool UserInputAttack(int& x, int& y, int theplayer)
 {
 	string currentPlayer = (theplayer == 1) ? "USER" : "COMPUTER";
-	cout << "\n " << currentPlayer << ", ENTER COORDINATES TO ATTACK: EX: 4:4";
+	cout << "\n " << currentPlayer << ", ENTER COORDINATES TO ATTACK: EX: 8:4";
 	bool goodInput = false;
 	char dummy;
 	cin >> x >> dummy >> y;
@@ -190,31 +233,21 @@ bool UserInputAttack(int& x, int& y, int theplayer)
 	return goodInput;
 }
 
-ShipLocation UserInputShipPlacement()
-{
-	int d, x, y;
-	ShipLocation tmp;
-	//Using this as a bad return
-	tmp.ship.point[0].X = -1;
-	//Get 3 integers from user
-	cin >> d >> x >> y;
-	if (d != 0 && d != 1) return tmp;
-	if (x < 0 || x >= BOARD_WIDTH) return tmp;
-	if (y < 0 || y >= BOARD_HEIGHT) return tmp;
-	//Good data
-	tmp.direction = (Position)d;
-	tmp.ship.point[0].X = x;
-	tmp.ship.point[0].Y = y;
-	return tmp;
-}
-
 void LoadShips()
 {
-	ship[0].SetName("Cruiser");		ship[0].SetSize(2);		ship[0].SetPosition(1);
-	ship[1].SetName("Frigate");		ship[1].SetSize(3);		ship[1].SetPosition(1);
-	ship[2].SetName("Submarine");	ship[2].SetSize(3);		ship[2].SetPosition(2);
-	ship[3].SetName("Escort");		ship[3].SetSize(4);		ship[3].SetPosition(1);
-	ship[4].SetName("Battleship");	ship[4].SetSize(5);		ship[4].SetPosition(2);
+	userShips[0].SetName("Cruiser");		userShips[0].SetSize(2);		userShips[0].SetPosition(1);
+	userShips[1].SetName("Frigate");		userShips[1].SetSize(5);		userShips[1].SetPosition(1);
+	userShips[2].SetName("Submarine");		userShips[2].SetSize(3);		userShips[2].SetPosition(2);
+	userShips[3].SetName("Escort");			userShips[3].SetSize(4);		userShips[3].SetPosition(1);
+	userShips[4].SetName("Battleship");		userShips[4].SetSize(2);		userShips[4].SetPosition(2);
+	userShips[5].SetName("Destroyer");		userShips[5].SetSize(4);		userShips[5].SetPosition(2);
+
+	enemyShips[0].SetName("Cruiser");		enemyShips[0].SetSize(2);		enemyShips[0].SetPosition(1);
+	enemyShips[1].SetName("Frigate");		enemyShips[1].SetSize(3);		enemyShips[1].SetPosition(1);
+	enemyShips[2].SetName("Submarine");		enemyShips[2].SetSize(3);		enemyShips[2].SetPosition(2);
+	enemyShips[3].SetName("Escort");		enemyShips[3].SetSize(4);		enemyShips[3].SetPosition(1);
+	enemyShips[4].SetName("Battleship");	enemyShips[4].SetSize(2);		enemyShips[4].SetPosition(2);
+	enemyShips[5].SetName("Destroyer");		enemyShips[5].SetSize(4);		enemyShips[5].SetPosition(2);
 }
 void ResetBoard()
 {
@@ -234,7 +267,8 @@ void ResetBoard()
 void DrawBoard(int thisPlayer)
 {
 	//Draws the board for a player (thisPlayer)
-	cout << "PLAYER " << thisPlayer << "'s GAME BOARD\n";
+	string currentPlayer = (thisPlayer == 1) ? "USER" : "COMPUTER";
+	cout << currentPlayer << " - GAME BOARD\n";
 	cout << "----------------------\n";
 
 	//Loop through top row (board_width) and number columns

@@ -57,19 +57,19 @@ void Ship::Place(int BOARD_WIDTH, int BOARD_HEIGHT)
 	(10 marks) for the driver
 	*/
 
-	int d, x, y;
-	d = rand() % 2 + 1;
+	Point point;
+	point.d = rand() % 2 + 1;
 	do {
-		x = rand() % BOARD_WIDTH;
-	} while (x < 0 || x >= BOARD_WIDTH);
+		point.x = rand() % BOARD_WIDTH;
+	} while (point.x < 0 || point.x >= BOARD_WIDTH);
 
 	do {
-		y = rand() % BOARD_HEIGHT;
-	} while (y < 0 || y >= BOARD_HEIGHT);
+		point.y = rand() % BOARD_HEIGHT;
+	} while (point.y < 0 || point.y >= BOARD_HEIGHT);
 
-	this->horizontalVertical = d;
-	this->point[0].X = x;
-	this->point[0].Y = y;
+	this->horizontalVertical = point.d;
+	this->point[0].x = point.x;
+	this->point[0].y = point.y;
 }
 
 void Ship::SaveInformationLog(string textToSave)

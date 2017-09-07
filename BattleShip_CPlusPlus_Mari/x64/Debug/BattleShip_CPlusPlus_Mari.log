@@ -1,5 +1,5 @@
 ﻿  main.cpp
 g:\cplusplus\battleship_cplusplus_mari\battleship_cplusplus_mari\main.cpp(14): warning C4309: 'initializing': truncation of constant value
-g:\cplusplus\battleship_cplusplus_mari\battleship_cplusplus_mari\main.cpp(117): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+g:\cplusplus\battleship_cplusplus_mari\battleship_cplusplus_mari\main.cpp(132): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   BattleShip_CPlusPlus_Mari.vcxproj -> G:\Cplusplus\BattleShip_CPlusPlus_Mari\x64\Debug\BattleShip_CPlusPlus_Mari.exe
   BattleShip_CPlusPlus_Mari.vcxproj -> G:\Cplusplus\BattleShip_CPlusPlus_Mari\x64\Debug\BattleShip_CPlusPlus_Mari.pdb (Partial PDB)
